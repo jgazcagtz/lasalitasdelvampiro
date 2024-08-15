@@ -926,33 +926,38 @@
             };
 
             function updateCart() {
-                const cartItemsSection = document.getElementById('cart-items');
-                const cartTotal = document.getElementById('cart-total');
-                const paypalForm = document.getElementById('paypal-form');
-                const whatsappBtn = document.getElementById('whatsapp-btn');
-                const editCartItems = document.getElementById('edit-cart-items');
+    const cartItemsSection = document.getElementById('cart-items');
+    const cartTotal = document.getElementById('cart-total');
+    const paypalForm = document.getElementById('paypal-form');
+    const whatsappBtn = document.getElementById('whatsapp-btn');
+    const editCartItems = document.getElementById('edit-cart-items');
 
-                cartItemsSection.innerHTML = '';
-                editCartItems.innerHTML = '';
-                total = 0;
+    cartItemsSection.innerHTML = '';
+    editCartItems.innerHTML = '';
+    total = 0;
 
-                cart.forEach((item, index) => {
-                    cartItemsSection.innerHTML += `<p>${item.name} - $${item.price} x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}</p>`;
-                    editCartItems.innerHTML += `
-                        <p>
-                            ${item.name} - 
-                            <button class="quantity-btn" onclick="window.decreaseQuantity(${index})">-</button>
-                            ${item.quantity}
-                            <button class="quantity-btn" onclick="window.increaseQuantity(${index})">+</button>
-                            = $${(item.price * item.quantity).toFixed(2)}
-                            <button onclick="window.removeCartItem(${index})">Eliminar</button>
-                        </p>`;
-                    total += item.price * item.quantity;
-                });
+    cart.forEach((item, index) => {
+        cartItemsSection.innerHTML += `<p>${item.name} - $${item.price} x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}</p>`;
+        editCartItems.innerHTML += `
+            <p>
+                ${item.name} - 
+                <button class="quantity-btn" onclick="window.decreaseQuantity(${index})">-</button>
+                ${item.quantity}
+                <button class="quantity-btn" onclick="window.increaseQuantity(${index})">+</button>
+                = $${(item.price * item.quantity).toFixed(2)}
+                <button onclick="window.removeCartItem(${index})">Eliminar</button>
+            </p>`;
+        total += item.price * item.quantity;
+    });
 
-                if (discountApplied) {
-                    total *= 0.5; // Apply 50% discount
-                }
+    if (discountApplied) {
+        total *= 0.5; // Apply 50% discount
+    }
+
+    cartTotal.textContent = `Total: $${total.toFixed(2)}`;
+    updatePayPalForm();
+    updateWhatsAppLink();
+
 
                 cartTotal.textContent = `Total: $${total.toFixed(2)}`;
                 updatePayPalForm();
@@ -1021,18 +1026,38 @@
             };
 
             window.applyDiscount = function() {
-                const discountCodeInput = document.getElementById('discount-code');
-                const discountCode = discountCodeInput.value.trim().toLowerCase();
-                
-                if (discountCode === "lasalitasdelvampiro") {
-                    discountApplied = true;
-                    alert("¡Código de descuento aplicado! 50% de descuento en tu pedido.");
-                } else {
-                    discountApplied = false;
-                    alert("Código de descuento no válido.");
-                }
-                updateCart();
-            };
+    const discountCodeInput = document.getElementById('discount-code');
+    const discountCode = discountCodeInput.value.trim().toLowerCase();
+    
+    if (discountCode === "lasalitasdelvampiro") {
+        discountApplied = true;
+        alert("¡Código de descuento aplicado! 50% de descuento en tu pedido.");
+    } else if (discountCode === "elvampiro") {
+        applyBOGODiscount();
+        alert("¡Código de descuento aplicado! Compra uno y obtén uno gratis.");
+    } else {
+        discountApplied = false;
+        alert("Código de descuento no válido.");
+    }
+    updateCart();
+};
+
+function applyBOGODiscount() {
+    if (cart.length > 0) {
+        // Find the most expensive item in the cart
+        let maxPrice = Math.max(...cart.map(item => item.price));
+        let mostExpensiveItem = cart.find(item => item.price === maxPrice);
+        
+        if (mostExpensiveItem) {
+            // Add a free item to the cart (same item as the most expensive one)
+            cart.push({
+                name: `${mostExpensiveItem.name} (Gratis)`,
+                price: 0, // Free item
+                quantity: 1
+            });
+        }
+    }
+}
 
             window.toggleDiscountModal = function() {
                 const discountModal = document.getElementById('discount-modal');
