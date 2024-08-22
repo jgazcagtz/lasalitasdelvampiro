@@ -229,11 +229,12 @@
 
         #cart h3 {
             margin-bottom: 20px;
+            color: var(--text-color);
         }
 
         #cart-items p {
             margin-bottom: 15px;
-            color: #555;
+            color: var(--text-color);
         }
 
         #cart-total {
@@ -254,6 +255,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            color: var(--text-color);
+        }
+
+        #cart p,
+        #cart label {
+            color: var(--text-color);
         }
 
         /* Toggle Switch Styles */
@@ -321,7 +328,7 @@
             bottom: 80px;
             right: 20px;
             background-color: var(--accent-color);
-            color: var(--white);
+            color: var (--white);
             border: none;
             border-radius: 50%;
             width: 60px;
@@ -354,7 +361,6 @@
         }
 
         .modal-content {
-          
             background-color: #fefefe;
             margin: 10% auto;
             padding: 20px;
@@ -365,6 +371,7 @@
             position: relative;
             transition: transform 0.3s ease;
             animation: fadeInUp 0.5s ease-out;
+            color: var(--text-color);
         }
 
         .modal-content:hover {
@@ -390,11 +397,12 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            color: var(--text-color);
         }
 
         .modal-header h2 {
             margin: 0;
-            color: white;
+            color: var(--text-color);
         }
 
         .modal-body p {
@@ -402,7 +410,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            color: #555;
+            color: var(--text-color);
         }
 
         .quantity-btn {
@@ -688,6 +696,7 @@
             max-width: 400px;
             border-radius: 12px;
             animation: fadeInUp 0.5s ease-out;
+            color: var(--text-color);
         }
 
         #discount-modal .close {
@@ -703,24 +712,24 @@
             text-decoration: none;
             cursor: pointer;
         }
-      
-      .video-container {
-        position: relative;
-        width: 100%;
-        height: 0;
-        padding-bottom: 56.25%; /* 16:9 aspect ratio */
-        overflow: hidden;
-        background: #000;
-    }
 
-    .video-container iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border: 0;
-    }
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            overflow: hidden;
+            background: #000;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -866,19 +875,19 @@
                 { name: "Cerillo lata Grande", img: "https://i.imgur.com/RzNzcOj.png", price: 55, includes: "Más refrescante para saciar esa sed (de la mala)." },
                 { name: "Refresco", img: "https://i.imgur.com/IxCc0m8.png", price: 25, includes: "" },
                 { name: "Salsa Pastor", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
-{ name: "Salsa BBQ Diabla", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
-{ name: "Salsa Frutos Rojos", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
-{ name: "Salsa Tamarindo Habanero", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
-{ name: "Salsa Cajun", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
-{ name: "Salsa Búfalo", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
-{ name: "Salsa Fresa Hot", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
-{ name: "Salsa Maracuyá Habanero", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
-{ name: "Salsa Flamin' Hot", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
-{ name: "Salsa Crema de Habanero", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
-{ name: "Salsa Queso Jalapeño", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
-{ name: "Salsa Zarzamora Chipotle", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
-{ name: "Salsa Mango Habanero", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
-{ name: "Salsa Chetos", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
+                { name: "Salsa BBQ Diabla", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
+                { name: "Salsa Frutos Rojos", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
+                { name: "Salsa Tamarindo Habanero", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
+                { name: "Salsa Cajun", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
+                { name: "Salsa Búfalo", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
+                { name: "Salsa Fresa Hot", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
+                { name: "Salsa Maracuyá Habanero", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
+                { name: "Salsa Flamin' Hot", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
+                { name: "Salsa Crema de Habanero", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
+                { name: "Salsa Queso Jalapeño", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
+                { name: "Salsa Zarzamora Chipotle", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
+                { name: "Salsa Mango Habanero", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
+                { name: "Salsa Chetos", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
 
 
               
@@ -949,9 +958,9 @@
                 modalContent.innerHTML = `
                     <h3>${selectedProduct.name}</h3>
                     <img src="${selectedProduct.img}" alt="${selectedProduct.name}" style="width: 100px; height: 100px;">
-                    <p>Precio: $${selectedProduct.price.toFixed(2)}</p>
-                    <p>${selectedProduct.includes}</p>
-                    <p>Cantidad: ${selectedProduct.quantity}</p>
+                    <p style="color: var(--text-color);">Precio: $${selectedProduct.price.toFixed(2)}</p>
+                    <p style="color: var(--text-color);">${selectedProduct.includes}</p>
+                    <p style="color: var(--text-color);">Cantidad: ${selectedProduct.quantity}</p>
                 `;
 
                 toggleProductModal();
