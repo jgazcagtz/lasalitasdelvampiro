@@ -354,6 +354,7 @@
         }
 
         .modal-content {
+          
             background-color: #fefefe;
             margin: 10% auto;
             padding: 20px;
@@ -560,7 +561,7 @@
         .vertical-product-item h3 {
             margin: 0 0 8px 0;
             font-size: 1.3em;
-            color: var(--text-color);
+            color: var (--text-color);
             font-weight: 700;
         }
 
@@ -743,6 +744,10 @@
             <p id="cart-total">Total: $0.00</p>
             <p>Pagar con PayPal:</p><br>
             <div id="paypal-form"></div>
+            <p>Dirección de Entrega:</p>
+            <input type="text" id="delivery-address" placeholder="Ingresa tu dirección aquí..." style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ddd;">
+            <p>Notas:</p>
+            <textarea id="order-notes" placeholder="Agrega notas adicionales..." style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd;"></textarea>
             <p>Método de pago:</p>
             <ul id="payment-methods">
                 <li>
@@ -834,6 +839,14 @@
         </div>
     </div>
 
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="toggleProductModal()">&times;</span>
+            <div id="product-modal-content"></div>
+            <button class="choose-btn" onclick="addProductToCart()">Añadir al Carrito</button>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const products = [
@@ -874,6 +887,7 @@
             const cart = [];
             let total = 0;
             let discountApplied = false;
+            let selectedProduct = null;
 
             function createProductElement(product, index, layout = 'vertical') {
                 const productItem = document.createElement('div');
@@ -892,7 +906,7 @@
                                 <option value="4">4</option>
                                 <option value="5">5</option>
                             </select>
-                            <p><button class="choose-btn" onclick="window.addToCart(${index}, '${layout}')">Elegir</button></p>
+                            <p><button class="choose-btn" onclick="window.showProductModal(${index}, '${layout}')">Elegir</button></p>
                         </div>
                     `;
                 } else {
@@ -910,7 +924,7 @@
                                 <option value="4">4</option>
                                 <option value="5">5</option>
                             </select>
-                            <p><button class="choose-btn" onclick="window.addToCart(${index}, '${layout}')">Elegir</button></p>
+                            <p><button class="choose-btn" onclick="window.showProductModal(${index}, '${layout}')">Elegir</button></p>
                         </div>
                     `;
                 }
@@ -925,55 +939,66 @@
                 });
             }
 
-            window.addToCart = function(index, layout = 'vertical') {
+            window.showProductModal = function(index, layout = 'vertical') {
                 const productList = layout === 'horizontal' ? topProducts : products;
                 const quantitySelect = document.getElementById(`quantity-${layout}-${index}`);
                 const quantity = parseInt(quantitySelect.value);
-                const product = productList[index];
-                const existingProduct = cart.find(item => item.name === product.name);
+                selectedProduct = { ...productList[index], quantity };
+
+                const modalContent = document.getElementById('product-modal-content');
+                modalContent.innerHTML = `
+                    <h3>${selectedProduct.name}</h3>
+                    <img src="${selectedProduct.img}" alt="${selectedProduct.name}" style="width: 100px; height: 100px;">
+                    <p>Precio: $${selectedProduct.price.toFixed(2)}</p>
+                    <p>${selectedProduct.includes}</p>
+                    <p>Cantidad: ${selectedProduct.quantity}</p>
+                `;
+
+                toggleProductModal();
+            };
+
+            window.addProductToCart = function() {
+                const existingProduct = cart.find(item => item.name === selectedProduct.name);
 
                 if (existingProduct) {
-                    existingProduct.quantity += quantity;
+                    existingProduct.quantity += selectedProduct.quantity;
                 } else {
-                    cart.push({ name: product.name, price: product.price, quantity: quantity });
+                    cart.push({ name: selectedProduct.name, price: selectedProduct.price, quantity: selectedProduct.quantity });
                 }
-                alert(`Producto agregado al carrito: ${product.name} x ${quantity}`);
+
                 updateCart();
+                toggleProductModal();
+                alert(`Producto agregado al carrito: ${selectedProduct.name} x ${selectedProduct.quantity}`);
             };
 
             function updateCart() {
-    const cartItemsSection = document.getElementById('cart-items');
-    const cartTotal = document.getElementById('cart-total');
-    const paypalForm = document.getElementById('paypal-form');
-    const whatsappBtn = document.getElementById('whatsapp-btn');
-    const editCartItems = document.getElementById('edit-cart-items');
+                const cartItemsSection = document.getElementById('cart-items');
+                const cartTotal = document.getElementById('cart-total');
+                const paypalForm = document.getElementById('paypal-form');
+                const whatsappBtn = document.getElementById('whatsapp-btn');
+                const editCartItems = document.getElementById('edit-cart-items');
 
-    cartItemsSection.innerHTML = '';
-    editCartItems.innerHTML = '';
-    total = 0;
+                cartItemsSection.innerHTML = '';
+                editCartItems.innerHTML = '';
+                total = 0;
 
-    cart.forEach((item, index) => {
-        cartItemsSection.innerHTML += `<p>${item.name} - $${item.price} x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}</p>`;
-        editCartItems.innerHTML += `
-            <p>
-                ${item.name} - 
-                <button class="quantity-btn" onclick="window.decreaseQuantity(${index})">-</button>
-                ${item.quantity}
-                <button class="quantity-btn" onclick="window.increaseQuantity(${index})">+</button>
-                = $${(item.price * item.quantity).toFixed(2)}
-                <button onclick="window.removeCartItem(${index})">Eliminar</button>
-            </p>`;
-        total += item.price * item.quantity;
-    });
+                cart.forEach((item, index) => {
+                    cartItemsSection.innerHTML += `<p>${item.name} - $${item.price} x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}</p>`;
+                    editCartItems.innerHTML += `
+                        <p>
+                            ${item.name} - 
+                            <button class="quantity-btn" onclick="window.decreaseQuantity(${index})">-</button>
+                            ${item.quantity}
+                            <button class="quantity-btn" onclick="window.increaseQuantity(${index})">+</button>
+                            = $${(item.price * item.quantity).toFixed(2)}
+                            <button onclick="window.removeCartItem(${index})">Eliminar</button>
+                        </p>`;
+                    total += item.price * item.quantity;
+                });
 
-    if (discountApplied) {
-        total *= 0.5; // Apply 50% discount
-    }
-
-    cartTotal.textContent = `Total: $${total.toFixed(2)}`;
-    updatePayPalForm();
-    updateWhatsAppLink();
-
+                if (discountApplied) {
+                    total *= 0.5; // Apply 50% discount
+                }
 
                 cartTotal.textContent = `Total: $${total.toFixed(2)}`;
                 updatePayPalForm();
@@ -1017,7 +1042,9 @@
                 const whatsappBtn = document.getElementById('whatsapp-btn');
                 const selectedPaymentMethod = getSelectedPaymentMethod();
                 const selectedDeliveryMethod = getSelectedDeliveryMethod();
-                const message = `Orden para Las Alitas Del Vampiro:\n${cart.map(item => `${item.name} (${item.quantity}) - $${item.price} c/u`).join('\n')}\nTotal: $${total.toFixed(2)}\nMétodo de pago: ${selectedPaymentMethod}\nMétodo de entrega: ${selectedDeliveryMethod}`;
+                const deliveryAddress = document.getElementById('delivery-address').value.trim();
+                const orderNotes = document.getElementById('order-notes').value.trim();
+                const message = `Orden para Las Alitas Del Vampiro:\n${cart.map(item => `${item.name} (${item.quantity}) - $${item.price} c/u`).join('\n')}\nTotal: $${total.toFixed(2)}\nMétodo de pago: ${selectedPaymentMethod}\nMétodo de entrega: ${selectedDeliveryMethod}\nDirección de entrega: ${deliveryAddress}\nNotas: ${orderNotes}`;
                 const encodedMessage = encodeURIComponent(message);
                 whatsappBtn.href = `https://wa.me/526313400977?text=${encodedMessage}`;
                 whatsappBtn.style.display = total > 0 ? 'inline-flex' : 'none';
@@ -1042,42 +1069,47 @@
             };
 
             window.applyDiscount = function() {
-    const discountCodeInput = document.getElementById('discount-code');
-    const discountCode = discountCodeInput.value.trim().toLowerCase();
-    
-    if (discountCode === "lasalitasdelvampiro") {
-        discountApplied = true;
-        alert("¡Código de descuento aplicado! 50% de descuento en tu pedido.");
-    } else if (discountCode === "elvampiro") {
-        applyBOGODiscount();
-        alert("¡Código de descuento aplicado! Compra uno y obtén uno gratis.");
-    } else {
-        discountApplied = false;
-        alert("Código de descuento no válido.");
-    }
-    updateCart();
-};
+                const discountCodeInput = document.getElementById('discount-code');
+                const discountCode = discountCodeInput.value.trim().toLowerCase();
+                
+                if (discountCode === "lasalitasdelvampiro") {
+                    discountApplied = true;
+                    alert("¡Código de descuento aplicado! 50% de descuento en tu pedido.");
+                } else if (discountCode === "elvampiro") {
+                    applyBOGODiscount();
+                    alert("¡Código de descuento aplicado! Compra uno y obtén uno gratis.");
+                } else {
+                    discountApplied = false;
+                    alert("Código de descuento no válido.");
+                }
+                updateCart();
+            };
 
-function applyBOGODiscount() {
-    if (cart.length > 0) {
-        // Find the most expensive item in the cart
-        let maxPrice = Math.max(...cart.map(item => item.price));
-        let mostExpensiveItem = cart.find(item => item.price === maxPrice);
-        
-        if (mostExpensiveItem) {
-            // Add a free item to the cart (same item as the most expensive one)
-            cart.push({
-                name: `${mostExpensiveItem.name} (Gratis)`,
-                price: 0, // Free item
-                quantity: 1
-            });
-        }
-    }
-}
+            function applyBOGODiscount() {
+                if (cart.length > 0) {
+                    // Find the most expensive item in the cart
+                    let maxPrice = Math.max(...cart.map(item => item.price));
+                    let mostExpensiveItem = cart.find(item => item.price === maxPrice);
+                    
+                    if (mostExpensiveItem) {
+                        // Add a free item to the cart (same item as the most expensive one)
+                        cart.push({
+                            name: `${mostExpensiveItem.name} (Gratis)`,
+                            price: 0, // Free item
+                            quantity: 1
+                        });
+                    }
+                }
+            }
 
             window.toggleDiscountModal = function() {
                 const discountModal = document.getElementById('discount-modal');
                 discountModal.style.display = discountModal.style.display === 'block' ? 'none' : 'block';
+            };
+
+            window.toggleProductModal = function() {
+                const productModal = document.getElementById('product-modal');
+                productModal.style.display = productModal.style.display === 'block' ? 'none' : 'block';
             };
 
             // Display top 6 most expensive products in horizontal layout
@@ -1101,10 +1133,13 @@ function applyBOGODiscount() {
         window.onclick = function(event) {
             const modal = document.getElementById('edit-modal');
             const discountModal = document.getElementById('discount-modal');
+            const productModal = document.getElementById('product-modal');
             if (event.target === modal) {
                 modal.style.display = 'none';
             } else if (event.target === discountModal) {
                 discountModal.style.display = 'none';
+            } else if (event.target === productModal) {
+                productModal.style.display = 'none';
             }
         }
 
