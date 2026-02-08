@@ -1,25 +1,51 @@
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Las Alitas del Vampiro</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap">
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body data-theme="light">
+
+    <!-- ═══ SPLASH SCREEN ═══ -->
+    <div id="splash-screen">
+        <div class="splash-logo-wrap">
+            <img class="splash-logo" src="https://i.imgur.com/MI5oH8w.jpeg" alt="Logo">
+            <div class="splash-ring"></div>
+            <div class="splash-ring splash-ring-2"></div>
+        </div>
+        <div class="splash-title" id="splash-title"></div>
+        <p class="splash-tagline">Alitas, Costillas y Chamorros al Carbón 🔥</p>
+        <div class="splash-progress">
+            <div class="splash-progress-bar"></div>
+        </div>
+        <div class="splash-particles">
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!-- ═══ HEADER / HERO ═══ -->
     <header>
+        <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
         <img src="https://i.imgur.com/MI5oH8w.jpeg" alt="Logo">
         <h1>🦇 LAS ALITAS DEL VAMPIRO</h1>
         <p>Alitas, Costillas y Chamorros al Carbón.</p><br>
-      <div class="video-container">
-    <iframe width="300" height="315" src="https://www.youtube.com/embed/WjIgQPozoV8?si=PDMiuX4Mtg4r50ys" 
-        title="YouTube video player" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-        referrerpolicy="strict-origin-when-cross-origin" 
-        allowfullscreen>
-    </iframe>
-</div>
+        <div class="video-container">
+            <iframe width="300" height="315" src="https://www.youtube.com/embed/WjIgQPozoV8?si=PDMiuX4Mtg4r50ys"
+                title="YouTube video player"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+            </iframe>
+        </div>
     </header>
+
     <main>
         <div id="cart">
             <h3>🦇 Carrito</h3>
@@ -73,9 +99,9 @@
                 </li>
             </ul>
             <p><a id="whatsapp-btn" href="#" target="_blank" style="display: none;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
-                Confirmar orden por Whatsapp
-              </a></p>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+                    Confirmar orden por Whatsapp
+                </a></p>
             <br>
             <button class="edit-btn" onclick="toggleModal()">Editar Carrito</button>
             <button id="refresh-btn" onclick="clearCart()">Borrar Carrito</button></p>
@@ -83,23 +109,24 @@
         </div>
         <button id="cart-btn" onclick="toggleCart()">🛒</button>
 
-        <!-- New Horizontal Menu -->
-        <div class="menu-title-container">
+        <!-- Menu sections -->
+        <div class="menu-title-container reveal">
             <h2>🔥 Los Básicos</h2>
         </div>
         <div id="menu-horizontal" class="horizontal-product-grid"></div>
-        
-        <div class="menu-title-container">
+
+        <div class="menu-title-container reveal">
             <h2>🧛 Menú</h2>
         </div>
         <div id="menu" class="vertical-product-grid"></div>
-        <button onclick="toggleTheme()">Toggle Dark Mode</button>
     </main>
+
     <footer>
         <p>¡Gracias por tu preferencia!</p>
         <p>C. 12 225, Esperanza, 57800 Cdad. Nezahualcóyotl, Méx.</p>
     </footer>
 
+    <!-- ═══ MODALS ═══ -->
     <div id="edit-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -132,4 +159,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>

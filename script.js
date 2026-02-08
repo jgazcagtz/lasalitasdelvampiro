@@ -1,3 +1,72 @@
+/* ============================================
+   SPLASH SCREEN – runs immediately (IIFE)
+   ============================================ */
+(function initSplash() {
+    const splash = document.getElementById('splash-screen');
+    if (!splash) return;
+
+    // Letter-by-letter title reveal
+    const titleEl = document.getElementById('splash-title');
+    if (titleEl) {
+        const text = 'LAS ALITAS DEL VAMPIRO';
+        text.split('').forEach((ch, i) => {
+            const span = document.createElement('span');
+            span.textContent = ch === ' ' ? '\u00A0' : ch;
+            span.style.animationDelay = `${0.6 + i * 0.05}s`;
+            titleEl.appendChild(span);
+        });
+    }
+
+    const MIN_DISPLAY = 2500;           // 2.5 seconds minimum
+    const startTime = Date.now();
+
+    function hideSplash() {
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, MIN_DISPLAY - elapsed);
+
+        setTimeout(() => {
+            splash.classList.add('splash-hide');
+            setTimeout(() => splash.remove(), 600);
+        }, remaining);
+    }
+
+    if (document.readyState === 'complete') {
+        hideSplash();
+    } else {
+        window.addEventListener('load', hideSplash);
+    }
+})();
+
+/* ============================================
+   SCROLL REVEAL – IntersectionObserver
+   ============================================ */
+(function initReveal() {
+    function setup() {
+        const els = document.querySelectorAll('.reveal');
+        if (!els.length) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        els.forEach(el => observer.observe(el));
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setup);
+    } else {
+        setup();
+    }
+})();
+
+/* ============================================
+   MAIN APPLICATION LOGIC (unchanged business logic)
+   ============================================ */
 document.addEventListener('DOMContentLoaded', () => {
     const products = [
         { name: "Costillas - 1/2 kg", img: "https://i.imgur.com/Z39P8Ur.jpeg", price: 130, includes: "Un deleite para los amantes de la carne." },
@@ -86,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    window.showProductModal = function(index, layout = 'vertical') {
+    window.showProductModal = function (index, layout = 'vertical') {
         const productList = layout === 'horizontal' ? topProducts : products;
         const quantitySelect = document.getElementById(`quantity-${layout}-${index}`);
         const quantity = parseInt(quantitySelect.value);
@@ -104,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleProductModal();
     };
 
-    window.addProductToCart = function() {
+    window.addProductToCart = function () {
         const existingProduct = cart.find(item => item.name === selectedProduct.name);
 
         if (existingProduct) {
@@ -152,12 +221,12 @@ document.addEventListener('DOMContentLoaded', () => {
         updateWhatsAppLink();
     }
 
-    window.increaseQuantity = function(index) {
+    window.increaseQuantity = function (index) {
         cart[index].quantity += 1;
         updateCart();
     };
 
-    window.decreaseQuantity = function(index) {
+    window.decreaseQuantity = function (index) {
         if (cart[index].quantity > 1) {
             cart[index].quantity -= 1;
         } else {
@@ -166,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCart();
     };
 
-    window.removeCartItem = function(index) {
+    window.removeCartItem = function (index) {
         cart.splice(index, 1);
         updateCart();
     };
@@ -209,16 +278,16 @@ document.addEventListener('DOMContentLoaded', () => {
         input.addEventListener('change', updateWhatsAppLink);
     });
 
-    window.clearCart = function() {
+    window.clearCart = function () {
         cart.length = 0;
         discountApplied = false; // Reset discount when cart is cleared
         updateCart();
     };
 
-    window.applyDiscount = function() {
+    window.applyDiscount = function () {
         const discountCodeInput = document.getElementById('discount-code');
         const discountCode = discountCodeInput.value.trim().toLowerCase();
-        
+
         if (discountCode === "lasalitasdelvampiro") {
             discountApplied = true;
             alert("¡Código de descuento aplicado! 50% de descuento en tu pedido.");
@@ -237,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Find the most expensive item in the cart
             let maxPrice = Math.max(...cart.map(item => item.price));
             let mostExpensiveItem = cart.find(item => item.price === maxPrice);
-            
+
             if (mostExpensiveItem) {
                 // Add a free item to the cart (same item as the most expensive one)
                 cart.push({
@@ -249,12 +318,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    window.toggleDiscountModal = function() {
+    window.toggleDiscountModal = function () {
         const discountModal = document.getElementById('discount-modal');
         discountModal.style.display = discountModal.style.display === 'block' ? 'none' : 'block';
     };
 
-    window.toggleProductModal = function() {
+    window.toggleProductModal = function () {
         const productModal = document.getElementById('product-modal');
         productModal.style.display = productModal.style.display === 'block' ? 'none' : 'block';
     };
@@ -267,6 +336,9 @@ document.addEventListener('DOMContentLoaded', () => {
     displayProducts(products, 'vertical');
 });
 
+/* ============================================
+   GLOBAL FUNCTIONS
+   ============================================ */
 function toggleCart() {
     const cart = document.getElementById('cart');
     cart.style.display = cart.style.display === 'none' || cart.style.display === '' ? 'block' : 'none';
@@ -277,7 +349,7 @@ function toggleModal() {
     modal.style.display = modal.style.display === 'none' || modal.style.display === '' ? 'block' : 'none';
 }
 
-window.onclick = function(event) {
+window.onclick = function (event) {
     const modal = document.getElementById('edit-modal');
     const discountModal = document.getElementById('discount-modal');
     const productModal = document.getElementById('product-modal');
@@ -291,5 +363,8 @@ window.onclick = function(event) {
 }
 
 function toggleTheme() {
-    document.body.dataset.theme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+    const isDark = document.body.dataset.theme === 'dark';
+    document.body.dataset.theme = isDark ? 'light' : 'dark';
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.textContent = isDark ? '🌙' : '☀️';
 }
