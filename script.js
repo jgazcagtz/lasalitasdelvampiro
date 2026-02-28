@@ -98,6 +98,19 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: "Salsa Zarzamora Chipotle", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
         { name: "Salsa Mango Habanero", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
         { name: "Salsa Chetos", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 0, includes: "" },
+        // Productos nuevos - Tacos (reemplazar img con links de imgur cuando estén listos)
+        // IMGUR: Tacos al Pastor
+        { name: "Tacos al Pastor", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 17, includes: "Deliciosos tacos al pastor. $17 c/u o orden de 5 por $70." },
+        // IMGUR: Orden 5 Tacos al Pastor
+        { name: "Orden 5 Tacos al Pastor", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 70, includes: "Orden de 5 tacos al pastor." },
+        // IMGUR: Tacos Suadero
+        { name: "Tacos Suadero", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 17, includes: "Deliciosos tacos de suadero. $17 c/u o orden de 5 por $70." },
+        // IMGUR: Orden 5 Tacos Suadero
+        { name: "Orden 5 Tacos Suadero", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 70, includes: "Orden de 5 tacos de suadero." },
+        // IMGUR: Tacos Bisteck
+        { name: "Tacos Bisteck", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 17, includes: "Deliciosos tacos de bisteck. $17 c/u o orden de 5 por $70." },
+        // IMGUR: Orden 5 Tacos Bisteck
+        { name: "Orden 5 Tacos Bisteck", img: "https://i.imgur.com/MI5oH8w.jpeg", price: 70, includes: "Orden de 5 tacos de bisteck." },
     ];
 
     const cart = [];
@@ -156,8 +169,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.showProductModal = function (index, layout = 'vertical') {
-        const productList = layout === 'horizontal' ? topProducts : products;
-        const quantitySelect = document.getElementById(`quantity-${layout}-${index}`);
+        const productList = (layout === 'tacos' || layout === 'vertical') ? products : topProducts;
+        const qtyLayout = layout === 'tacos' ? 'horizontal' : layout;
+        const quantitySelect = document.getElementById(`quantity-${qtyLayout}-${index}`);
         const quantity = parseInt(quantitySelect.value);
         selectedProduct = { ...productList[index], quantity };
 
@@ -256,14 +270,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateWhatsAppLink() {
         const whatsappBtn = document.getElementById('whatsapp-btn');
+        const whatsappBtn2 = document.getElementById('whatsapp-btn-2');
         const selectedPaymentMethod = getSelectedPaymentMethod();
         const selectedDeliveryMethod = getSelectedDeliveryMethod();
         const deliveryAddress = document.getElementById('delivery-address').value.trim();
         const orderNotes = document.getElementById('order-notes').value.trim();
         const message = `Orden para Las Alitas Del Vampiro:\n${cart.map(item => `${item.name} (${item.quantity}) - $${item.price} c/u`).join('\n')}\nTotal: $${total.toFixed(2)}\nMétodo de pago: ${selectedPaymentMethod}\nMétodo de entrega: ${selectedDeliveryMethod}\nDirección de entrega: ${deliveryAddress}\nNotas: ${orderNotes}`;
         const encodedMessage = encodeURIComponent(message);
-        whatsappBtn.href = `https://wa.me/526313400977?text=${encodedMessage}`;
-        whatsappBtn.style.display = total > 0 ? 'inline-flex' : 'none';
+        const showBtn = total > 0;
+        whatsappBtn.href = `https://wa.me/527713523056?text=${encodedMessage}`;
+        whatsappBtn.style.display = showBtn ? 'inline-flex' : 'none';
+        whatsappBtn2.href = `https://wa.me/527719590915?text=${encodedMessage}`;
+        whatsappBtn2.style.display = showBtn ? 'inline-flex' : 'none';
     }
 
     function getSelectedPaymentMethod() {
@@ -331,6 +349,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Display top 6 most expensive products in horizontal layout
     const topProducts = [...products].sort((a, b) => b.price - a.price).slice(0, 6);
     displayProducts(topProducts, 'horizontal');
+
+    // Tacos (productos nuevos) - usa layout 'tacos' para modal con products
+    const tacoProducts = products.filter(p =>
+        p.name.includes('Tacos') || p.name.includes('Orden 5 Tacos')
+    );
+    const menuTacos = document.getElementById('menu-tacos');
+    if (menuTacos) {
+        menuTacos.innerHTML = '';
+        const tacoIndices = tacoProducts.map(p => products.indexOf(p));
+        tacoProducts.forEach((product, i) => {
+            const el = createProductElement(product, tacoIndices[i], 'horizontal');
+            const btn = el.querySelector('button.choose-btn');
+            if (btn) btn.setAttribute('onclick', `window.showProductModal(${tacoIndices[i]}, 'tacos')`);
+            menuTacos.appendChild(el);
+        });
+    }
 
     // Display all products in vertical layout initially
     displayProducts(products, 'vertical');
