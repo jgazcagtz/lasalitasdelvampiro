@@ -172,7 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const productList = (layout === 'tacos' || layout === 'vertical') ? products : topProducts;
         const qtyLayout = layout === 'tacos' ? 'horizontal' : layout;
         const quantitySelect = document.getElementById(`quantity-${qtyLayout}-${index}`);
-        const quantity = parseInt(quantitySelect.value);
+        if (!quantitySelect) return;
+        const quantity = parseInt(quantitySelect.value, 10);
         selectedProduct = { ...productList[index], quantity };
 
         const modalContent = document.getElementById('product-modal-content');
@@ -204,33 +205,44 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateCart() {
         const cartItemsSection = document.getElementById('cart-items');
         const cartTotal = document.getElementById('cart-total');
-        const paypalForm = document.getElementById('paypal-form');
-        const whatsappBtn = document.getElementById('whatsapp-btn');
+        const cartEmpty = document.getElementById('cart-empty');
+        const cartCheckout = document.getElementById('cart-checkout');
+        const cartCount = document.getElementById('cart-count');
         const editCartItems = document.getElementById('edit-cart-items');
 
         cartItemsSection.innerHTML = '';
         editCartItems.innerHTML = '';
         total = 0;
 
+        const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+        if (cartCount) {
+            cartCount.textContent = itemCount;
+            cartCount.style.display = itemCount > 0 ? 'flex' : 'none';
+        }
+        if (cartEmpty) cartEmpty.style.display = cart.length ? 'none' : 'block';
+        if (cartCheckout) cartCheckout.style.display = cart.length ? 'block' : 'none';
+
         cart.forEach((item, index) => {
             cartItemsSection.innerHTML += `<p>${item.name} - $${item.price} x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}</p>`;
             editCartItems.innerHTML += `
-                <p>
-                    ${item.name} - 
-                    <button class="quantity-btn" onclick="window.decreaseQuantity(${index})">-</button>
-                    ${item.quantity}
-                    <button class="quantity-btn" onclick="window.increaseQuantity(${index})">+</button>
-                    = $${(item.price * item.quantity).toFixed(2)}
-                    <button onclick="window.removeCartItem(${index})">Eliminar</button>
+                <p class="edit-cart-row">
+                    <span class="edit-cart-name">${item.name}</span>
+                    <span class="edit-cart-controls">
+                        <button type="button" class="quantity-btn" onclick="window.decreaseQuantity(${index})" aria-label="Menos">−</button>
+                        <span class="edit-cart-qty">${item.quantity}</span>
+                        <button type="button" class="quantity-btn" onclick="window.increaseQuantity(${index})" aria-label="Más">+</button>
+                        <span class="edit-cart-price">$${(item.price * item.quantity).toFixed(2)}</span>
+                        <button type="button" class="remove-btn" onclick="window.removeCartItem(${index})" aria-label="Eliminar">Eliminar</button>
+                    </span>
                 </p>`;
             total += item.price * item.quantity;
         });
 
         if (discountApplied) {
-            total *= 0.5; // Apply 50% discount
+            total *= 0.5;
         }
 
-        cartTotal.textContent = `Total: $${total.toFixed(2)}`;
+        if (cartTotal) cartTotal.textContent = `Total: $${total.toFixed(2)}`;
         updatePayPalForm();
         updateWhatsAppLink();
     }
@@ -243,10 +255,10 @@ document.addEventListener('DOMContentLoaded', () => {
     window.decreaseQuantity = function (index) {
         if (cart[index].quantity > 1) {
             cart[index].quantity -= 1;
+            updateCart();
         } else {
             window.removeCartItem(index);
         }
-        updateCart();
     };
 
     window.removeCartItem = function (index) {
@@ -295,6 +307,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('input[name="payment-method"], input[name="delivery-method"]').forEach(input => {
         input.addEventListener('change', updateWhatsAppLink);
     });
+    const deliveryAddress = document.getElementById('delivery-address');
+    const orderNotes = document.getElementById('order-notes');
+    if (deliveryAddress) deliveryAddress.addEventListener('input', updateWhatsAppLink);
+    if (orderNotes) orderNotes.addEventListener('input', updateWhatsAppLink);
 
     window.clearCart = function () {
         cart.length = 0;
@@ -308,9 +324,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (discountCode === "lasalitasdelvampiro") {
             discountApplied = true;
+            discountCodeInput.value = '';
             alert("¡Código de descuento aplicado! 50% de descuento en tu pedido.");
         } else if (discountCode === "elvampiro") {
             applyBOGODiscount();
+            discountCodeInput.value = '';
             alert("¡Código de descuento aplicado! Compra uno y obtén uno gratis.");
         } else {
             discountApplied = false;
@@ -336,15 +354,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    window.toggleDiscountModal = function () {
-        const discountModal = document.getElementById('discount-modal');
-        discountModal.style.display = discountModal.style.display === 'block' ? 'none' : 'block';
-    };
+window.toggleDiscountModal = function () {
+    const discountModal = document.getElementById('discount-modal');
+    const isOpen = discountModal.style.display === 'block';
+    discountModal.style.display = isOpen ? 'none' : 'block';
+    updateBodyScrollLock();
+};
 
-    window.toggleProductModal = function () {
-        const productModal = document.getElementById('product-modal');
-        productModal.style.display = productModal.style.display === 'block' ? 'none' : 'block';
-    };
+window.toggleProductModal = function () {
+    const productModal = document.getElementById('product-modal');
+    const isOpen = productModal.style.display === 'block';
+    productModal.style.display = isOpen ? 'none' : 'block';
+    updateBodyScrollLock();
+};
 
     // Display top 6 most expensive products in horizontal layout
     const topProducts = [...products].sort((a, b) => b.price - a.price).slice(0, 6);
@@ -368,31 +390,75 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Display all products in vertical layout initially
     displayProducts(products, 'vertical');
+
+    // Initial cart state
+    updateCart();
 });
 
 /* ============================================
    GLOBAL FUNCTIONS
    ============================================ */
+function isOverlayOpen() {
+    const cart = document.getElementById('cart');
+    const editModal = document.getElementById('edit-modal');
+    const discountModal = document.getElementById('discount-modal');
+    const productModal = document.getElementById('product-modal');
+    return (cart && cart.style.display === 'block') ||
+        (editModal && editModal.style.display === 'block') ||
+        (discountModal && discountModal.style.display === 'block') ||
+        (productModal && productModal.style.display === 'block');
+}
+
+function updateBodyScrollLock() {
+    document.body.style.overflow = isOverlayOpen() ? 'hidden' : '';
+    document.body.style.touchAction = isOverlayOpen() ? 'none' : '';
+}
+
 function toggleCart() {
     const cart = document.getElementById('cart');
-    cart.style.display = cart.style.display === 'none' || cart.style.display === '' ? 'block' : 'none';
+    const backdrop = document.getElementById('cart-backdrop');
+    const isOpen = cart.style.display === 'block';
+    if (isOpen) {
+        cart.style.display = 'none';
+        cart.setAttribute('aria-hidden', 'true');
+        if (backdrop) {
+            backdrop.classList.remove('visible');
+            backdrop.setAttribute('aria-hidden', 'true');
+        }
+    } else {
+        cart.style.display = 'block';
+        cart.setAttribute('aria-hidden', 'false');
+        if (backdrop) {
+            backdrop.classList.add('visible');
+            backdrop.setAttribute('aria-hidden', 'false');
+        }
+    }
+    updateBodyScrollLock();
 }
 
 function toggleModal() {
     const modal = document.getElementById('edit-modal');
-    modal.style.display = modal.style.display === 'none' || modal.style.display === '' ? 'block' : 'none';
+    const isOpen = modal.style.display === 'block';
+    modal.style.display = isOpen ? 'none' : 'block';
+    updateBodyScrollLock();
 }
 
 window.onclick = function (event) {
     const modal = document.getElementById('edit-modal');
     const discountModal = document.getElementById('discount-modal');
     const productModal = document.getElementById('product-modal');
+    const cartBackdrop = document.getElementById('cart-backdrop');
     if (event.target === modal) {
         modal.style.display = 'none';
+        updateBodyScrollLock();
     } else if (event.target === discountModal) {
         discountModal.style.display = 'none';
+        updateBodyScrollLock();
     } else if (event.target === productModal) {
         productModal.style.display = 'none';
+        updateBodyScrollLock();
+    } else if (event.target === cartBackdrop) {
+        toggleCart();
     }
 }
 

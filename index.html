@@ -2,7 +2,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5, user-scalable=yes">
+    <meta name="theme-color" content="#0d0d0d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Las Alitas del Vampiro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,9 +51,14 @@
     </header>
 
     <main>
-        <div id="cart">
-            <h3>🦇 Carrito</h3>
+        <div id="cart" class="cart-drawer" aria-hidden="true">
+            <div class="cart-header">
+                <h3>🦇 Carrito</h3>
+                <button type="button" class="cart-close" onclick="toggleCart()" aria-label="Cerrar carrito">&times;</button>
+            </div>
             <div id="cart-items"></div>
+            <div id="cart-empty" class="cart-empty">Tu carrito está vacío. ¡Agrega algo delicioso!</div>
+            <div id="cart-checkout" class="cart-checkout">
             <p id="cart-total">Total: $0.00</p>
             <p>Pagar con PayPal:</p><br>
             <div id="paypal-form"></div>
@@ -112,10 +121,12 @@
             </p>
             <br>
             <button class="edit-btn" onclick="toggleModal()">Editar Carrito</button>
-            <button id="refresh-btn" onclick="clearCart()">Borrar Carrito</button></p>
+            <button id="refresh-btn" onclick="clearCart()">Borrar Carrito</button>
             <button id="discount-btn" onclick="toggleDiscountModal()">Agregar Código de Descuento</button>
+            </div>
         </div>
         <button id="cart-btn" onclick="toggleCart()" aria-label="Carrito">
+            <span id="cart-count" class="cart-count" aria-hidden="true">0</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="9" cy="21" r="1" />
@@ -140,6 +151,8 @@
         </div>
         <div id="menu" class="vertical-product-grid"></div>
     </main>
+
+    <div id="cart-backdrop" class="cart-backdrop" onclick="toggleCart()" aria-hidden="true"></div>
 
     <footer>
         <p>¡Gracias por tu preferencia!</p>
